@@ -1,5 +1,4 @@
 name: Deploy to Cloudflare
-# 只允许手动触发，push不自动跑
 on:
   workflow_dispatch:
 
@@ -14,6 +13,11 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+          
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
 
       - name: 安装依赖
         run: bun install
