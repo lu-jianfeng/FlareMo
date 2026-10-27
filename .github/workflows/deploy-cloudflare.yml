@@ -21,14 +21,6 @@ jobs:
       - name: 安装依赖
         run: pnpm install
 
-      # 自动创建 flaremo-memos 向量索引，已经存在就跳过不报错
-      - name: 自动创建Vectorize索引 flaremo-memos
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          npx wrangler@latest vectorize create flaremo-memos --dimensions=1024 --metric=cosine || true
-
       - name: 打包构建
         run: pnpm -r build
 
