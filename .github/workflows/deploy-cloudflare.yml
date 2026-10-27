@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare
+name: Deploy to Cloudflare Worker
 on:
   workflow_dispatch:
 
@@ -9,23 +9,28 @@ jobs:
       - name: 拉取代码
         uses: actions/checkout@v4
 
-      - name: 安装 pnpm（自动读取 package.json 的版本）
+      - name: 安装 pnpm
         uses: pnpm/action-setup@v4
-        # 删掉 version: latest，不要写！
+        # 不要写 version，自动读取 package.json 的 pnpm@11.7.0
 
-      - name: 安装 Bun
-        uses: oven-sh/setup-bun@v2
+      - name: 配置 Node
+        uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: 22
+          cache: 'pnpm'
 
       - name: 安装依赖
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: 打包构建
         run: pnpm -r build
 
-      - name: 部署到 Cloudflare Worker
+      - name: 全局安装 wrangler
+        run: pnpm add -g wrangler
+
+      - name: 部署 Worker
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          package-manager: none   # 关键！关闭自动pnpm调用
